@@ -281,6 +281,8 @@ package apparat.memory.strategies
 				currentChunk.position = position;
 				currentChunk.length = _chunkSize;
 				currentChunk.prev = lastChunk;
+				
+				trace( "free chunk 0x"+ position.toString(16) );
 
 				position += _chunkSize;
 
@@ -304,7 +306,7 @@ package apparat.memory.strategies
 				{
 					lastChunk.next = _freeChunks;
 					_freeChunks.prev = lastChunk;
-					_freeChunks = currentChunk;
+					_freeChunks = firstChunk;
 				}
 				else
 				{
@@ -329,10 +331,21 @@ package apparat.memory.strategies
 					}
 
 					firstChunk.prev = currentChunk;
-					currentChunk.next.prev = lastChunk;
-					lastChunk.next = currentChunk.next;
+					
+					if( null == currentChunk.next ) {
+						currentChunk.next = firstChunk;
+						lastChunk.next = null;
+					}
+					else {
+						currentChunk.next.prev = lastChunk;
+						lastChunk.next = currentChunk.next;
+						currentChunk.next = firstChunk;
+					}
+						
+					
 				}
 			}
+			
 		}
 	}
 }
